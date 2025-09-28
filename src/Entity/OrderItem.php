@@ -3,16 +3,21 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
+
 use App\Repository\OrderItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OrderItemRepository::class)]
 #[ORM\Table(name: 'order_items')]
+#[ApiResource]
 class OrderItem
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    // @phpstan-ignore-next-line
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'items')]
@@ -20,23 +25,28 @@ class OrderItem
     private ?Order $order = null;    
 
     #[ORM\Column(length: 64)]
+    #[Groups(['order:read','order:write'])]
     private ?string $productId = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['order:read','order:write'])]
     private ?string $name = null;
 
     #[ORM\Column]
-    private int $price = 0;
+    #[Groups(['order:read','order:write'])]
+    private ?int $price = null;
 
     #[ORM\Column]
-    private int $quantity = 0;
+    #[Groups(['order:read','order:write'])]
+    private ?int $quantity = null;
 
-    public function __construct(
-        string $productId = '',
-        string $name = '',
-        int $price = 0,
-        int $quantity = 0
-    ) {
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function __construct(string $productId = '', string $name = '', int $price = 0, int $quantity = 0)
+    {
         if ($productId !== '') {
             $this->productId = $productId;
         }
@@ -47,19 +57,15 @@ class OrderItem
         $this->quantity = $quantity;
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
     public function getProductId(): ?string
     {
         return $this->productId;
     }
 
-    public function setProductId(string $productId): self
+    public function setProductId(string $productId): static
     {
         $this->productId = $productId;
+
         return $this;
     }
 
@@ -68,31 +74,34 @@ class OrderItem
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(string $name): static
     {
         $this->name = $name;
+
         return $this;
     }
 
-    public function getPrice(): int
+    public function getPrice(): ?int
     {
         return $this->price;
     }
 
-    public function setPrice(int $price): self
+    public function setPrice(int $price): static
     {
         $this->price = $price;
+
         return $this;
     }
 
-    public function getQuantity(): int
+    public function getQuantity(): ?int
     {
         return $this->quantity;
     }
 
-    public function setQuantity(int $quantity): self
+    public function setQuantity(int $quantity): static
     {
         $this->quantity = $quantity;
+
         return $this;
     }
 
@@ -101,9 +110,9 @@ class OrderItem
         return $this->order;
     }
 
-    public function setOrder(?Order $order): self
+    public function setOrder(?Order $order): static
     {
         $this->order = $order;
         return $this;
-    }
+    }    
 }
