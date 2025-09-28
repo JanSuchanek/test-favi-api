@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup PHP
+      uses: shimataro/pecl-action@v1
+    - name: Setup PHP
+      uses: actions/setup-php@v4
+      with:
+        php-version: '8.3'
+        tools: phpunit
+
+    - name: Install dependencies
+      run: composer install --no-progress --no-suggest --prefer-dist
+
+    - name: Run PHPStan
+      run: php -d memory_limit=2G ./vendor/bin/phpstan analyse -c phpstan.neon src tests
+
+    - name: Run PHPUnit
+      run: php -d memory_limit=2G ./vendor/bin/phpunit -c phpunit.dist.xml --testsuite default
+
+

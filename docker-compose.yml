@@ -1,0 +1,15 @@
+services:
+  favi:
+    build: .           # ← hledá Dockerfile v aktuálním adresáři
+    container_name: favi
+    working_dir: /app
+    ports:
+      - "8080:8080"
+    environment:
+      APP_ENV: dev
+      APP_SECRET: ChangeMe
+      DEFAULT_URI: http://localhost:8080
+    volumes:
+      - ./:/app
+      - ./var:/app/var
+    command: sh -lc "./docker/entrypoint.sh"
