@@ -20,7 +20,7 @@ final class ApiOrderDeliveryController
 
         $date = new \DateTimeImmutable($body['expectedDeliveryAt']);
         $order = $em->getRepository(Order::class)->findOneBy(['partnerId' => $partnerId, 'externalId' => $orderId]);
-        if (!$order) {
+        if (!$order instanceof \App\Entity\Order) {
             return new JsonResponse(['error' => 'Order not found'], 404);
         }
 

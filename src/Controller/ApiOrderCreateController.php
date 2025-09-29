@@ -48,10 +48,10 @@ final class ApiOrderCreateController
 
         // duplicate guard
         $existing = $em->getRepository(Order::class)->findOneBy(['partnerId' => $dto->partnerId, 'externalId' => $dto->orderId]);
-        if ($existing) {
+        if ($existing instanceof \App\Entity\Order) {
             // Return 409 with a helpful body pointing to existing resource
-            $partner = (string) ($existing->getPartnerId() ?? '');
-            $external = (string) ($existing->getExternalId() ?? '');
+            $partner = $existing->getPartnerId() ?? '';
+            $external = $existing->getExternalId() ?? '';
             $location = '/api/orders/' . urlencode($partner) . '/' . urlencode($external);
             return new JsonResponse([
                 'error' => 'order already exists',

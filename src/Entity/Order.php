@@ -76,7 +76,7 @@ class Order
         if ($externalId !== '') {
             $this->externalId = $externalId;
         }
-        if ($expectedDeliveryAt !== null) {
+        if ($expectedDeliveryAt instanceof \DateTimeImmutable) {
             $this->expectedDeliveryAt = $expectedDeliveryAt;
         }
         $this->totalPrice = 0;
@@ -155,10 +155,8 @@ class Order
 
     public function removeItem(OrderItem $item): static
     {
-        if ($this->items->removeElement($item)) {
-            if ($item->getOrder() === $this) {
-                $item->setOrder(null);
-            }
+        if ($this->items->removeElement($item) && $item->getOrder() === $this) {
+            $item->setOrder(null);
         }
         $this->recalculateTotal();
         return $this;
