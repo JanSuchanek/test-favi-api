@@ -160,13 +160,11 @@ class Order
      */
     public function getItemsArray(): array
     {
-        $out = [];
-        /** @var OrderItem $it */
-        foreach ($this->items as $it) {
-            $out[] = $it;
-        }
+        $arr = $this->items->toArray();
+        /** @var OrderItem[] $typed */
+        $typed = $arr;
 
-        return $out;
+        return array_values($typed);
     }
 
     public function addItem(OrderItem $item): static
