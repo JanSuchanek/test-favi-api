@@ -1,7 +1,7 @@
 {
     "type": "project",
     "license": "proprietary",
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
         "php": ">=8.2",
@@ -77,10 +77,12 @@
         "stan": "phpstan analyse --memory-limit=1G",
         "test": "phpunit",
         "cs-fix": "php-cs-fixer fix --diff",
+        "phpcs": "vendor/bin/phpcs --standard=PSR12 src tests",
         "check": [
             "@stan",
             "@test",
-            "php-cs-fixer fix --diff --dry-run"
+            "php-cs-fixer fix --diff --dry-run",
+            "@phpcs"
         ]        
     },
     "conflict": {
@@ -94,6 +96,7 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.87",
+        "squizlabs/php_codesniffer": "^4",
         "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^12.3",
         "rector/rector": "^2.1",
