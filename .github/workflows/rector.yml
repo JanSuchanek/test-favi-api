@@ -1,0 +1,27 @@
+name: Rector
+
+on:
+  pull_request:
+    branches:
+      - refactor/api-platform
+  push:
+    branches:
+      - refactor/api-platform
+
+jobs:
+  rector:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+      - name: Install dependencies
+        run: composer install --no-progress --no-suggest --prefer-dist
+      - name: Install rector
+        run: composer require --dev rector/rector || true
+      - name: Run rector (check-only)
+        run: vendor/bin/rector process --dry-run
+
+

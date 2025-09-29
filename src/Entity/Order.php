@@ -1,19 +1,19 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
-use Symfony\Component\Serializer\Annotation\Groups;
-
+use ApiPlatform\Metadata\Post;
 use App\Repository\OrderRepository;
-use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`orders`')]
@@ -43,15 +43,15 @@ class Order
     private ?int $id = null;
 
     #[ORM\Column(length: 64)]
-    #[Groups(['order:read','order:write'])]
+    #[Groups(['order:read', 'order:write'])]
     private ?string $partnerId = null;
 
     #[ORM\Column(length: 64)]
-    #[Groups(['order:read','order:write'])]
+    #[Groups(['order:read', 'order:write'])]
     private ?string $externalId = null;
 
     #[ORM\Column]
-    #[Groups(['order:read','order:write'])]
+    #[Groups(['order:read', 'order:write'])]
     private ?\DateTimeImmutable $expectedDeliveryAt = null;
 
     #[ORM\Column]
@@ -59,10 +59,11 @@ class Order
     private ?int $totalPrice = null;
 
     #[ORM\OneToMany(mappedBy: 'order', targetEntity: OrderItem::class, cascade: ['persist'], orphanRemoval: true)]
-    #[Groups(['order:read','order:write'])]
+    #[Groups(['order:read', 'order:write'])]
     /**
-     * @var \Doctrine\Common\Collections\Collection<int, \App\Entity\OrderItem>
-     * @phpstan-var \Doctrine\Common\Collections\Collection<int, \App\Entity\OrderItem>
+     * @var Collection<int, OrderItem>
+     *
+     * @phpstan-var Collection<int, OrderItem>
      */
     // @phpstan-ignore-next-line
     private Collection $items;
@@ -70,10 +71,10 @@ class Order
     public function __construct(string $partnerId = '', string $externalId = '', ?\DateTimeImmutable $expectedDeliveryAt = null)
     {
         $this->items = new ArrayCollection();
-        if ($partnerId !== '') {
+        if ('' !== $partnerId) {
             $this->partnerId = $partnerId;
         }
-        if ($externalId !== '') {
+        if ('' !== $externalId) {
             $this->externalId = $externalId;
         }
         if ($expectedDeliveryAt instanceof \DateTimeImmutable) {
@@ -150,6 +151,7 @@ class Order
             $item->setOrder($this);
         }
         $this->recalculateTotal();
+
         return $this;
     }
 
@@ -159,12 +161,14 @@ class Order
             $item->setOrder(null);
         }
         $this->recalculateTotal();
+
         return $this;
-    }    
+    }
 
     public function updateExpectedDelivery(\DateTimeImmutable $date): static
     {
         $this->expectedDeliveryAt = $date;
+
         return $this;
     }
 

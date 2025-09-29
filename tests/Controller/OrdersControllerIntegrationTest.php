@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Controller;
@@ -13,6 +14,7 @@ class OrdersControllerIntegrationTest extends WebTestCase
     {
         return \App\Kernel::class;
     }
+
     public function testPostCreatesOrderAndPersists(): void
     {
         $client = static::createClient();
@@ -22,7 +24,7 @@ class OrdersControllerIntegrationTest extends WebTestCase
             'orderId' => 'integration-o',
             'expectedDeliveryAt' => '2025-12-01',
             'products' => [
-                ['productId' => 'p1', 'name' => 'Product 1', 'price' => 100, 'quantity' => 2]
+                ['productId' => 'p1', 'name' => 'Product 1', 'price' => 100, 'quantity' => 2],
             ],
         ];
 
@@ -66,7 +68,7 @@ class OrdersControllerIntegrationTest extends WebTestCase
             'orderId' => 'dup-o',
             'expectedDeliveryAt' => '2025-12-01',
             'products' => [
-                ['productId' => 'p1', 'name' => 'Product 1', 'price' => 100, 'quantity' => 2]
+                ['productId' => 'p1', 'name' => 'Product 1', 'price' => 100, 'quantity' => 2],
             ],
         ];
 
@@ -131,8 +133,8 @@ class OrdersControllerIntegrationTest extends WebTestCase
         $repo = $doctrine->getRepository(Order::class);
         $found = $repo->findOneBy(['partnerId' => 'int-patch-p', 'externalId' => 'int-patch-o']);
         $this->assertNotNull($found);
-        /** @var \App\Entity\Order $found */
-        $this->assertInstanceOf(\App\Entity\Order::class, $found);
+        /* @var \App\Entity\Order $found */
+        $this->assertInstanceOf(Order::class, $found);
         $this->assertNotNull($found->getExpectedDeliveryAt());
         $this->assertSame('2026-01-01', $found->getExpectedDeliveryAt()->format('Y-m-d'));
 
@@ -141,5 +143,3 @@ class OrdersControllerIntegrationTest extends WebTestCase
         $em->flush();
     }
 }
-
-

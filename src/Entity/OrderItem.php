@@ -1,13 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use Symfony\Component\Serializer\Annotation\Groups;
-
 use App\Repository\OrderItemRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: OrderItemRepository::class)]
 #[ORM\Table(name: 'order_items')]
@@ -22,22 +22,22 @@ class OrderItem
 
     #[ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'items')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Order $order = null;    
+    private ?Order $order = null;
 
     #[ORM\Column(length: 64)]
-    #[Groups(['order:read','order:write'])]
+    #[Groups(['order:read', 'order:write'])]
     private ?string $productId = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['order:read','order:write'])]
+    #[Groups(['order:read', 'order:write'])]
     private ?string $name = null;
 
     #[ORM\Column]
-    #[Groups(['order:read','order:write'])]
+    #[Groups(['order:read', 'order:write'])]
     private ?int $price = null;
 
     #[ORM\Column]
-    #[Groups(['order:read','order:write'])]
+    #[Groups(['order:read', 'order:write'])]
     private ?int $quantity = null;
 
     public function getId(): ?int
@@ -47,10 +47,10 @@ class OrderItem
 
     public function __construct(string $productId = '', string $name = '', int $price = 0, int $quantity = 0)
     {
-        if ($productId !== '') {
+        if ('' !== $productId) {
             $this->productId = $productId;
         }
-        if ($name !== '') {
+        if ('' !== $name) {
             $this->name = $name;
         }
         $this->price = $price;
@@ -113,6 +113,7 @@ class OrderItem
     public function setOrder(?Order $order): static
     {
         $this->order = $order;
+
         return $this;
-    }    
+    }
 }

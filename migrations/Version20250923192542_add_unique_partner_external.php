@@ -24,5 +24,3 @@ final class Version20250923192542_add_unique_partner_external extends AbstractMi
         $this->addSql('DROP INDEX uniq_partner_external');
     }
 }
-
-

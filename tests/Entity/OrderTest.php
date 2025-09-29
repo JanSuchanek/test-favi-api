@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Entity;
@@ -22,5 +23,3 @@ class OrderTest extends TestCase
         $this->assertSame(250, $order->getTotalPrice());
     }
 }
-
-

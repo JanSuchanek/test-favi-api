@@ -1,12 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Database;
 
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-
-use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\DBAL\Connection;
+use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class SchemaTest extends KernelTestCase
 {
@@ -39,7 +39,7 @@ class SchemaTest extends KernelTestCase
         foreach ($indexes as $idx) {
             /** @var string[] $cols */
             $cols = $idx->getColumns();
-            if ($idx->isUnique() && count($cols) === 2) {
+            if ($idx->isUnique() && 2 === count($cols)) {
                 $lower = array_map('strtolower', $cols);
                 if ($lower === ['partner_id', 'external_id'] || $lower === ['external_id', 'partner_id']) {
                     $found = true;
@@ -56,7 +56,7 @@ class SchemaTest extends KernelTestCase
             foreach ($indexes as $idx) {
                 /** @var string[] $cols */
                 $cols = $idx->getColumns();
-                if ($idx->isUnique() && count($cols) === 2) {
+                if ($idx->isUnique() && 2 === count($cols)) {
                     $lower = array_map('strtolower', $cols);
                     if ($lower === ['partner_id', 'external_id'] || $lower === ['external_id', 'partner_id']) {
                         $found = true;
@@ -69,5 +69,3 @@ class SchemaTest extends KernelTestCase
         $this->assertTrue($found, 'Unique index on (partner_id, external_id) must exist on `orders` table');
     }
 }
-
-

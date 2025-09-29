@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Dto\OrderRequest;
 use App\Dto\OrderItemRequest;
+use App\Dto\OrderRequest;
 use App\Entity\Order;
 use App\Entity\OrderItem;
 use Doctrine\ORM\EntityManagerInterface;
@@ -34,8 +35,8 @@ final class ApiOrderCreateController
                 $it = new OrderItemRequest();
                 $it->productId = isset($item['id']) && is_string($item['id']) ? $item['id'] : (isset($item['productId']) && is_string($item['productId']) ? $item['productId'] : '');
                 $it->name = isset($item['name']) && is_string($item['name']) ? $item['name'] : '';
-                $it->price = isset($item['price']) && (is_int($item['price']) || is_numeric($item['price'])) ? (int)$item['price'] : 0;
-                $it->quantity = isset($item['quantity']) && (is_int($item['quantity']) || is_numeric($item['quantity'])) ? (int)$item['quantity'] : 0;
+                $it->price = isset($item['price']) && (is_int($item['price']) || is_numeric($item['price'])) ? (int) $item['price'] : 0;
+                $it->quantity = isset($item['quantity']) && (is_int($item['quantity']) || is_numeric($item['quantity'])) ? (int) $item['quantity'] : 0;
                 $products[] = $it;
             }
         }
@@ -43,16 +44,17 @@ final class ApiOrderCreateController
 
         $errors = $v->validate($dto);
         if (count($errors) > 0) {
-            return new JsonResponse(['errors' => (string)$errors], 422);
+            return new JsonResponse(['errors' => (string) $errors], 422);
         }
 
         // duplicate guard
         $existing = $em->getRepository(Order::class)->findOneBy(['partnerId' => $dto->partnerId, 'externalId' => $dto->orderId]);
-        if ($existing instanceof \App\Entity\Order) {
+        if ($existing instanceof Order) {
             // Return 409 with a helpful body pointing to existing resource
             $partner = $existing->getPartnerId() ?? '';
             $external = $existing->getExternalId() ?? '';
             $location = '/api/orders/' . urlencode($partner) . '/' . urlencode($external);
+
             return new JsonResponse([
                 'error' => 'order already exists',
                 'existing' => [
@@ -60,7 +62,7 @@ final class ApiOrderCreateController
                     'orderId' => $existing->getExternalId(),
                     'totalPrice' => $existing->getTotalPrice(),
                     'location' => $location,
-                ]
+                ],
             ], 409, ['Location' => $location]);
         }
 
@@ -81,5 +83,3 @@ final class ApiOrderCreateController
         ], 201);
     }
 }
-
-
