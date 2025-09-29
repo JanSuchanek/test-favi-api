@@ -13,6 +13,11 @@ Quick start (local - without Docker)
 3. Run built-in web server:
    - php -S 127.0.0.1:8080 -t public
    - or: symfony server:start
+      - Recommended with Symfony CLI. Example:
+        - brew install symfony-cli
+        - composer install
+        - symfony server:start --port=8080
+      - To run without TLS: `symfony server:start --no-tls --port=8080`
 
 Docker (recommended for reproducible environment)
 1. Build and run containers:
