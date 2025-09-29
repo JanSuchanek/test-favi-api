@@ -52,6 +52,22 @@ Testing
   - composer test
   - or: ./vendor/bin/phpunit -c phpunit.dist.xml
 
+Quality checks
+- Run the full quality check (static analysis, tests, style):
+  - composer run check
+- Run PHPStan only:
+  - composer run stan
+- Run PHPCS (style linter) using project config:
+  - composer run phpcs
+- Auto-fix style issues with PHP CS Fixer:
+  - composer run cs-fix
+
+Test outputs
+- PHPUnit can emit JUnit XML and a text log for CI/debugging. Example:
+  - vendor/bin/phpunit --log-junit test-results.xml | tee phpunit-output.txt
+- These artifacts are generated locally and should not be committed. They are
+  ignored by `.gitignore` in this repo.
+
 Notes
 - The project uses API Platform for resources and OpenAPI generation (`/api` browsable docs).
 - Database default in tests is SQLite `var/data.db`.
