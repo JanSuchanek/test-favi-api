@@ -7,7 +7,7 @@ namespace App\Controller;
 use App\Dto\OrderItemRequest;
 use App\Dto\OrderRequest;
 use App\Entity\Order;
-use App\Entity\OrderItem;
+use App\Service\OrderService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class ApiOrderCreateController
 {
-    public function __invoke(Request $req, ValidatorInterface $v, EntityManagerInterface $em): JsonResponse
+    public function __invoke(Request $req, ValidatorInterface $v, EntityManagerInterface $em, OrderService $orderService): JsonResponse
     {
         $decoded = json_decode($req->getContent(), true);
         $data = is_array($decoded) ? $decoded : [];
@@ -101,15 +101,18 @@ final class ApiOrderCreateController
             ], 409, ['Location' => $location]);
         }
 
-        $expected = new \DateTimeImmutable($dto->expectedDeliveryAt);
-        $order = new Order($dto->partnerId, $dto->orderId, $expected);
-        foreach ($dto->products as $p) {
-            $item = new OrderItem($p->productId, $p->name, $p->price, $p->quantity);
-            $order->addItem($item);
+        // Validate expectedDeliveryAt presence and format to avoid 500 on invalid input
+        if ('' === trim($dto->expectedDeliveryAt)) {
+            return new JsonResponse(['errors' => 'expectedDeliveryAt is required'], 422);
         }
 
-        $em->persist($order);
-        $em->flush();
+        try {
+            $expected = new \DateTimeImmutable($dto->expectedDeliveryAt);
+        } catch (\Throwable $e) {
+            return new JsonResponse(['errors' => 'expectedDeliveryAt has invalid format'], 422);
+        }
+        // Delegate creation and persistence to OrderService
+        $order = $orderService->createFromRequest($dto);
 
         return new JsonResponse([
             'partnerId' => $dto->partnerId,

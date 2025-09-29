@@ -102,6 +102,41 @@ class OrdersControllerIntegrationTest extends WebTestCase
         }
     }
 
+    public function testPostInvalidExpectedDeliveryReturns422(): void
+    {
+        $client = static::createClient();
+
+        $body = [
+            'partnerId' => 'bad-p',
+            'orderId' => 'bad-o',
+            'expectedDeliveryAt' => 'not-a-date',
+            'products' => [
+                ['productId' => 'p1', 'name' => 'Product 1', 'price' => 100, 'quantity' => 2],
+            ],
+        ];
+
+        // ensure no leftover for these identifiers
+        /** @var \Doctrine\Persistence\ManagerRegistry $doctrine */
+        $doctrine = static::getContainer()->get('doctrine');
+        /** @var \Doctrine\ORM\EntityManagerInterface $em */
+        $em = $doctrine->getManager();
+        $repo = $doctrine->getRepository(Order::class);
+        $old = $repo->findOneBy(['partnerId' => 'bad-p', 'externalId' => 'bad-o']);
+        if ($old) {
+            $em->remove($old);
+            $em->flush();
+        }
+
+        $client->request('POST', '/api/orders', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode($body, JSON_THROW_ON_ERROR));
+        $this->assertSame(422, $client->getResponse()->getStatusCode());
+
+        $data = json_decode((string) $client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($data);
+        $this->assertArrayHasKey('errors', $data);
+        $this->assertIsString($data['errors']);
+        $this->assertStringContainsString('invalid format', $data['errors']);
+    }
+
     public function testPatchUpdatesExpectedDelivery(): void
     {
         $client = static::createClient();

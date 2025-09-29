@@ -99,6 +99,8 @@ class Order
 
     public function setPartnerId(string $partnerId): static
     {
+        // Setter kept for framework/serializer compatibility but mark as deprecated
+        @trigger_error('Order::setPartnerId is deprecated; use constructor or dedicated service', E_USER_DEPRECATED);
         $this->partnerId = $partnerId;
 
         return $this;
@@ -111,6 +113,7 @@ class Order
 
     public function setExternalId(string $externalId): static
     {
+        @trigger_error('Order::setExternalId is deprecated; use constructor or dedicated service', E_USER_DEPRECATED);
         $this->externalId = $externalId;
 
         return $this;
@@ -123,6 +126,7 @@ class Order
 
     public function setExpectedDeliveryAt(\DateTimeImmutable $expectedDeliveryAt): static
     {
+        @trigger_error('Order::setExpectedDeliveryAt is deprecated; use updateExpectedDelivery or a service', E_USER_DEPRECATED);
         $this->expectedDeliveryAt = $expectedDeliveryAt;
 
         return $this;
@@ -135,6 +139,7 @@ class Order
 
     public function setTotalPrice(int $totalPrice): static
     {
+        @trigger_error('Order::setTotalPrice is deprecated; total is calculated automatically', E_USER_DEPRECATED);
         $this->totalPrice = $totalPrice;
 
         return $this;
@@ -146,6 +151,22 @@ class Order
     public function getItems(): Collection
     {
         return $this->items;
+    }
+
+    /**
+     * Convenience method returning items as a plain array for DTOs/serializers.
+     *
+     * @return OrderItem[]
+     */
+    public function getItemsArray(): array
+    {
+        $out = [];
+        /** @var OrderItem $it */
+        foreach ($this->items as $it) {
+            $out[] = $it;
+        }
+
+        return $out;
     }
 
     public function addItem(OrderItem $item): static
