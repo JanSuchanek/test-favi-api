@@ -71,15 +71,19 @@ class Order
     public function __construct(string $partnerId = '', string $externalId = '', ?\DateTimeImmutable $expectedDeliveryAt = null)
     {
         $this->items = new ArrayCollection();
+
         if ('' !== $partnerId) {
             $this->partnerId = $partnerId;
         }
+
         if ('' !== $externalId) {
             $this->externalId = $externalId;
         }
+
         if ($expectedDeliveryAt instanceof \DateTimeImmutable) {
             $this->expectedDeliveryAt = $expectedDeliveryAt;
         }
+
         $this->totalPrice = 0;
     }
 

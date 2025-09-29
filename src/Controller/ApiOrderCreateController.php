@@ -21,9 +21,21 @@ final class ApiOrderCreateController
         $data = is_array($decoded) ? $decoded : [];
 
         $dto = new OrderRequest();
-        $dto->partnerId = isset($data['partnerId']) && is_string($data['partnerId']) ? $data['partnerId'] : '';
-        $dto->orderId = isset($data['orderId']) && is_string($data['orderId']) ? $data['orderId'] : '';
-        $dto->expectedDeliveryAt = isset($data['expectedDeliveryAt']) && is_string($data['expectedDeliveryAt']) ? $data['expectedDeliveryAt'] : '';
+
+        $dto->partnerId = '';
+        if (isset($data['partnerId']) && is_string($data['partnerId'])) {
+            $dto->partnerId = $data['partnerId'];
+        }
+
+        $dto->orderId = '';
+        if (isset($data['orderId']) && is_string($data['orderId'])) {
+            $dto->orderId = $data['orderId'];
+        }
+
+        $dto->expectedDeliveryAt = '';
+        if (isset($data['expectedDeliveryAt']) && is_string($data['expectedDeliveryAt'])) {
+            $dto->expectedDeliveryAt = $data['expectedDeliveryAt'];
+        }
 
         $productsRaw = $data['products'] ?? [];
         $products = [];
@@ -33,10 +45,29 @@ final class ApiOrderCreateController
                     continue;
                 }
                 $it = new OrderItemRequest();
-                $it->productId = isset($item['id']) && is_string($item['id']) ? $item['id'] : (isset($item['productId']) && is_string($item['productId']) ? $item['productId'] : '');
-                $it->name = isset($item['name']) && is_string($item['name']) ? $item['name'] : '';
-                $it->price = isset($item['price']) && (is_int($item['price']) || is_numeric($item['price'])) ? (int) $item['price'] : 0;
-                $it->quantity = isset($item['quantity']) && (is_int($item['quantity']) || is_numeric($item['quantity'])) ? (int) $item['quantity'] : 0;
+
+                $productId = '';
+                if (isset($item['id']) && is_string($item['id'])) {
+                    $productId = $item['id'];
+                } elseif (isset($item['productId']) && is_string($item['productId'])) {
+                    $productId = $item['productId'];
+                }
+                $it->productId = $productId;
+
+                $it->name = '';
+                if (isset($item['name']) && is_string($item['name'])) {
+                    $it->name = $item['name'];
+                }
+
+                $it->price = 0;
+                if (isset($item['price']) && (is_int($item['price']) || is_numeric($item['price']))) {
+                    $it->price = (int) $item['price'];
+                }
+
+                $it->quantity = 0;
+                if (isset($item['quantity']) && (is_int($item['quantity']) || is_numeric($item['quantity']))) {
+                    $it->quantity = (int) $item['quantity'];
+                }
                 $products[] = $it;
             }
         }
@@ -48,7 +79,11 @@ final class ApiOrderCreateController
         }
 
         // duplicate guard
-        $existing = $em->getRepository(Order::class)->findOneBy(['partnerId' => $dto->partnerId, 'externalId' => $dto->orderId]);
+        $existing = $em->getRepository(Order::class)
+            ->findOneBy([
+                'partnerId' => $dto->partnerId,
+                'externalId' => $dto->orderId,
+            ]);
         if ($existing instanceof Order) {
             // Return 409 with a helpful body pointing to existing resource
             $partner = $existing->getPartnerId() ?? '';

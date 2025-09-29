@@ -77,7 +77,7 @@
         "stan": "phpstan analyse --memory-limit=1G",
         "test": "phpunit",
         "cs-fix": "php-cs-fixer fix --diff",
-        "phpcs": "vendor/bin/phpcs --standard=PSR12 src tests",
+        "phpcs": "vendor/bin/phpcs --standard=phpcs.xml src tests",
         "check": [
             "@stan",
             "@test",

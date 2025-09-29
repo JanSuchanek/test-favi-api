@@ -8,6 +8,8 @@ $finder = (new PhpCsFixer\Finder())
 return (new PhpCsFixer\Config())
     ->setRules([
         '@Symfony' => true,
+        // ensure spaces around string concatenation to match PSR-12 / phpcs expectations
+        'concat_space' => ['spacing' => 'one'],
     ])
     ->setFinder($finder)
 ;
