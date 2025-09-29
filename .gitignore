@@ -27,3 +27,5 @@
 Thumbs.db
 /node_modules/
 *.log
+test-results.xml
+phpunit-output.txt
